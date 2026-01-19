@@ -1,0 +1,61 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import '../../core/api/api_client.dart';
+import '../../core/utils/api_response.dart';
+import '../../models/project.dart';
+import 'project_detail_screen.dart';
+
+class ProjectsScreen extends StatefulWidget {
+  const ProjectsScreen({super.key});
+
+  @override
+  State<ProjectsScreen> createState() => _ProjectsScreenState();
+}
+
+class _ProjectsScreenState extends State<ProjectsScreen> {
+  List<Project> projects = [];
+  bool loading = true;
+
+  Future<void> loadProjects() async {
+    final res = await ApiClient.get('/api/projects');
+    final json = jsonDecode(res.body);
+    final api = ApiResponse.fromJson(json);
+    setState(() {
+      projects = (api.data as List).map((e) => Project.fromJson(e)).toList();
+      loading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadProjects();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Projects")),
+      body: loading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: projects.length,
+              itemBuilder: (_, i) {
+                final p = projects[i];
+                return ListTile(
+                  title: Text(p.title),
+                  subtitle: Text(p.description ?? ""),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => ProjectDetailScreen(project: p)),
+                    );
+                  },
+                );
+              },
+            ),
+    );
+  }
+}
+
