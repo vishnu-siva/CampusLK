@@ -59,6 +59,4 @@ public class ApplicationController {
         return new ApiResponse<>(true, "Application withdrawn", null);
     }
 
-
-
 }
