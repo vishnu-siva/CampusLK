@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../auth/login_screen.dart';
 import '../../core/storage/token_storage.dart';
-import '../../core/api/api_client.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -53,6 +52,24 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              if (value == 'logout') {
+                await TokenStorage.clearToken();
+                if (!context.mounted) return;
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem(value: 'logout', child: Text('Logout')),
+            ],
+          ),
+        ],
       ),
       body: Center(
         child: ElevatedButton(
