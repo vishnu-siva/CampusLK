@@ -18,19 +18,6 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   Student? student;
   bool loading = true;
-  bool loggingOut = false;
-
-  Future<void> _logout() async {
-    if (loggingOut) return;
-    setState(() => loggingOut = true);
-    await TokenStorage.clearToken();
-    if (!mounted) return;
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-      (route) => false,
-    );
-  }
 
   Future<void> loadProfile() async {
     setState(() => loading = true);
@@ -164,25 +151,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 12),
                 Text("Bio: ${student!.bio ?? '-'}"),
                 Text("Portfolio: ${student!.portfolioUrl ?? '-'}"),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: loggingOut ? null : _logout,
-                    icon: const Icon(Icons.logout),
-                    label: loggingOut
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
-                          )
-                        : const Text('Logout'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

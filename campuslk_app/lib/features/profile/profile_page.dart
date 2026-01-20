@@ -66,7 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
               }
             },
             itemBuilder: (context) => const [
-              PopupMenuItem(value: 'logout', child: Text('Logout')),
+              PopupMenuItem(value: 'logou', child: Text('Logout')),
             ],
           ),
         ],

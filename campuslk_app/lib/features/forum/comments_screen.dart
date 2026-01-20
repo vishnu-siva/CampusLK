@@ -137,9 +137,10 @@ class _CommentsScreenState extends State<CommentsScreen> {
                     itemCount: comments.length,
                     itemBuilder: (context, i) {
                       final c = comments[i];
+                      final authorName = c['studentName'] ?? 'Unknown';
                       return ListTile(
                         title: Text(c['content'] ?? ''),
-                        subtitle: Text("By: ${c['studentId'] ?? '-'}"),
+                        subtitle: Text("By: $authorName"),
                       );
                     },
                   ),

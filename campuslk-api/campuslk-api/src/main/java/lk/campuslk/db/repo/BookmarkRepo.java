@@ -19,4 +19,7 @@ public interface BookmarkRepo extends JpaRepository<Bookmark, String> {
     where b.student.id = :studentId
   """)
     List<Bookmark> findByStudentIdWithOpportunity(@Param("studentId") String studentId);
+
+    // Find bookmarks for a specific opportunity (used by deadline reminder job)
+    List<Bookmark> findByOpportunityId(String opportunityId);
 }

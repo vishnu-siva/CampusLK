@@ -113,9 +113,10 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
               itemCount: threads.length,
               itemBuilder: (context, i) {
                 final t = threads[i];
+                final authorName = t['createdByName'] ?? t['studentName'] ?? 'Unknown';
                 return ListTile(
                   title: Text(t['title'] ?? ''),
-                  subtitle: Text("By: ${t['createdBy'] ?? '-'}"),
+                  subtitle: Text("By: $authorName"),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     Navigator.push(

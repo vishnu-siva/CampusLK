@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Notifications test</title>
+  <script src="https://unpkg.com/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+  <script src="https://unpkg.com/stompjs@2.3.3/lib/stomp.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 16px; }
+    #log { white-space: pre-wrap; border: 1px solid #ddd; padding: 8px; height: 300px; overflow:auto; }
+  </style>
+</head>
+<body>
+  <h2>Realtime Notifications Test</h2>
+  <label>Student ID: <input id="studentId" value="student-id-123"></label>
+  <button id="connectBtn">Connect</button>
+  <button id="disconnectBtn" disabled>Disconnect</button>
+  <h3>Messages</h3>
+  <div id="log">Not connected</div>
+
+  <script>
+    let stompClient = null;
+    const logEl = document.getElementById('log');
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+
+    function log(msg) {
+      logEl.textContent = new Date().toLocaleTimeString() + ' - ' + msg + '\n' + logEl.textContent;
+    }
+
+    connectBtn.addEventListener('click', () => {
+      const studentId = document.getElementById('studentId').value.trim();
+      if (!studentId) { alert('Enter student id'); return; }
+
+      const socket = new SockJS('/ws');
+      stompClient = Stomp.over(socket);
+      // disable debug logs
+      stompClient.debug = null;
+      stompClient.connect({}, function(frame) {
+        log('Connected: ' + frame);
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+
+        const topic = '/topic/notifications/' + studentId;
+        stompClient.subscribe(topic, function(message) {
+          try {
+            const payload = JSON.parse(message.body);
+            log('Received: ' + JSON.stringify(payload));
+          } catch (e) {
+            log('Received (raw): ' + message.body);
+          }
+        });
+      }, function(err) {
+        log('STOMP error: ' + err);
+      });
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+      if (stompClient) {
+        stompClient.disconnect(() => {
+          log('Disconnected');
+          connectBtn.disabled = false;
+          disconnectBtn.disabled = true;
+        });
+      }
+    });
+  </script>
+</body>
+</html>
