@@ -76,6 +76,30 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
     }
   }
 
+  String _toDisplayTitle(Map<String, dynamic> thread) {
+    final rawTitle = thread['title'] ?? thread['threadTitle'] ?? '';
+    final content = thread['content'] ?? thread['body'] ?? '';
+    var title = rawTitle.toString().trim();
+
+    if (_looksLikeUuid(title) || title.isEmpty) {
+      title = content.toString().trim();
+    }
+
+    if (title.isEmpty) return 'Thread';
+    if (title.length <= 48) return title;
+    return '${title.substring(0, 48)}...';
+  }
+
+  bool _looksLikeUuid(String value) {
+    final v = value.trim();
+    final uuid = RegExp(r'^[0-9a-fA-F]{8}-'
+        r'[0-9a-fA-F]{4}-'
+        r'[0-9a-fA-F]{4}-'
+        r'[0-9a-fA-F]{4}-'
+        r'[0-9a-fA-F]{12}$');
+    return uuid.hasMatch(v);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (loading) {
@@ -113,9 +137,12 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
               itemCount: threads.length,
               itemBuilder: (context, i) {
                 final t = threads[i];
+                final displayTitle = _toDisplayTitle(
+                  t is Map<String, dynamic> ? t : (t as Map).cast<String, dynamic>(),
+                );
                 final authorName = t['createdByName'] ?? t['studentName'] ?? 'Unknown';
                 return ListTile(
-                  title: Text(t['title'] ?? ''),
+                  title: Text(displayTitle),
                   subtitle: Text("By: $authorName"),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
@@ -124,7 +151,7 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
                       MaterialPageRoute(
                         builder: (_) => CommentsScreen(
                           threadId: t['id'],
-                          threadTitle: t['title'] ?? 'Thread',
+                          threadTitle: displayTitle,
                         ),
                       ),
                     );
