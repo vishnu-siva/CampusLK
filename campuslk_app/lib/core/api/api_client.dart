@@ -3,8 +3,10 @@ import 'package:http/http.dart' as http;
 import '../storage/token_storage.dart';
 
 class ApiClient {
-  // Windows desktop / local backend
-  static const String baseUrl = 'http://10.0.2.2:8080';
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://172.25.72.197:8080',
+  );
 
   static Future<http.Response> get(String path) async {
     final token = await TokenStorage.getToken();
